@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+println("xxl ---> app.gradle")
+println("app name:${rootProject.ext.username}")
+android {
+    compileSdkVersion androidId.compileSdkVersion
+    defaultConfig {
+        applicationId appId.applicationId
+        minSdkVersion androidId.minSdkVersion
+        targetSdkVersion androidId.targetSdkVersion
+        versionCode androidId.versionCode
+        versionName androidId.versionName
+        testInstrumentationRunner androidId.testInstrumentationRunner
+
+    }
+    buildTypes {
+        debug {
+            buildConfigField("String", "debug", "\"${url.debug}\"")
+        }
+        release {
+            minifyEnabled false
+            buildConfigField("String", "debug", "\"${url.release}\"")
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+//    sourceSets {
+//        main {
+//            if (isRelase) {
+//                manifest.srcFile 'src/main/AndroidManifest.xml'
+//            } else {
+//                //不能跟默認目錄放在同一级?
+//                manifest.srcFile 'src/main/debug/TestAndroidManifest.xml'
+//                java {
+//                    exclude '**/debug/**'
+//                }
+//            }
+//        }
+//    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // 假设有非常多依赖，如何一行搞定300行
+    dependenciesId.each { k, v -> implementation v }
+    if (isRelease) {
+        implementation project(':login')
+        implementation project(':business')
+    }
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
